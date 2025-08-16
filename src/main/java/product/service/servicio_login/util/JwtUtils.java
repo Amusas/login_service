@@ -31,6 +31,7 @@ public class JwtUtils {
      */
     public String generateToken(LoginRequest user) {
         log.debug("Generando token JWT para el usuario: {}", user.name());
+        log.info("Private key hash: {}", KeyUtils.getPrivateKey().hashCode());
         Instant now = getCurrentInstant();
         Instant expiration = calculateExpiration(now);
         String token = buildJwtToken(user, now, expiration);

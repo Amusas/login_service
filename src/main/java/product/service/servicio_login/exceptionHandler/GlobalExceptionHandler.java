@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
-public class GLobalExceptionHandler {
+public class GlobalExceptionHandler {
     /**
             * Maneja las excepciones de validación de parámetros en la entrada de la solicitud.
      * Captura los errores de validación generados por el Bean Validation.

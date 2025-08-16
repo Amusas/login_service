@@ -7,6 +7,9 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -52,6 +55,7 @@ public class KeyUtils {
         initializeKeys();
     }
 
+
     /**
      * Inicializa las claves públicas y privadas a partir de los archivos PEM.
      * <p>
@@ -60,20 +64,26 @@ public class KeyUtils {
      */
     private void initializeKeys() {
         try {
-            Resource publicKeyResource = resourceLoader.getResource("classpath:keys/public-key.pem");
-            Resource privateKeyResource = resourceLoader.getResource("classpath:keys/private-key.pem");
+            // Ruta relativa al directorio del proyecto hijo
+            Path publicKeyPath = Paths.get("../keys/public-key.pem").normalize();
+            Path privateKeyPath = Paths.get("../keys/private-key.pem").normalize();
 
-            byte[] publicKeyBytes = publicKeyResource.getInputStream().readAllBytes();
-            byte[] privateKeyBytes = privateKeyResource.getInputStream().readAllBytes();
+            // Leer bytes directamente
+            byte[] publicKeyBytes = Files.readAllBytes(publicKeyPath);
+            byte[] privateKeyBytes = Files.readAllBytes(privateKeyPath);
 
+            // Construir objetos Key
             publicKey = readPublicKey(publicKeyBytes);
             privateKey = readPrivateKey(privateKeyBytes);
-            log.info("Claves RSA cargadas exitosamente.");
+
+            log.info("Claves RSA cargadas exitosamente desde {} y {}",
+                    publicKeyPath.toAbsolutePath(), privateKeyPath.toAbsolutePath());
         } catch (Exception e) {
             log.error("Error cargando las claves RSA", e);
             throw new RuntimeException("Error cargando las keys", e);
         }
     }
+
 
     /**
      * Lee y convierte el contenido de un archivo PEM en una clave pública RSA.
